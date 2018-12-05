@@ -12,6 +12,7 @@ import UIKit
 class DecisionViewController: UIViewController {
     
     private var decisionEngine : DecisionEngine?;
+    private var question = "";
     
     let questionField : UILabel = {
         let txt = UILabel()
@@ -65,15 +66,35 @@ class DecisionViewController: UIViewController {
         view.addSubview(yesButton);
         view.addSubview(noButton);
         
+        yesButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
+        noButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
+        
         setUpAutoLayout();
         
-        var dc = DecisionEngineController(DecisionReachedShouldNotCool: DecisionReachedShouldNotCool);
-        dc.DecisionReachedShouldNotCool = DecisionReachedShouldNotCool;
+        let dc = DecisionEngineController(DecisionReachedShouldProceed: DecisionReachedShouldProceed, DecisionReachedShouldNotCool: DecisionReachedShouldNotCool, NewQuestionToDisplay: NewQuestionToDisplay);
         decisionEngine = DecisionEngine(controller: dc);
     }
     
+    func DecisionReachedShouldProceed() -> Void {
+        questionField.text = "Proceed to neurological examination."
+    }
+    
     func DecisionReachedShouldNotCool() -> Void {
-        
+        questionField.text = "Do not cool infant."
+    }
+    
+    func NewQuestionToDisplay(question: String) -> Void {
+        questionField.text = question;
+        self.question = question;
+    }
+    
+    @objc func buttonPressed(_ sender: UIButton?) {
+        if (sender == yesButton) {
+            decisionEngine?.AnswerQuestion(question: question, value: true);
+        }
+        if (sender == noButton) {
+            decisionEngine?.AnswerQuestion(question: question, value: false);
+        }
     }
     
     func setUpAutoLayout() {

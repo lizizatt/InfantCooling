@@ -74,9 +74,9 @@ class DecisionEngine {
         for sample in samples {
             if (sample.question == question) {
                 sample.SetPass(value: value);
-                return;
             }
         }
+        CheckIfShouldCool();
     }
     
     private func CheckIfShouldCool() {
