@@ -41,7 +41,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                 <state key="normal" title="Start"/>
                                 <connections>
-                                    <segue destination="2KJ-9Z-DtZ" kind="show" id="HA3-Hm-LCh"/>
+                                    <segue destination="d1V-3i-4yz" kind="show" id="vdI-DD-6bh"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -53,125 +53,26 @@
             </objects>
             <point key="canvasLocation" x="40.799999999999997" y="20.689655172413794"/>
         </scene>
-        <!--Gestation Check View Controller-->
-        <scene sceneID="doT-dG-8Hd">
+        <!--Decision View Controller-->
+        <scene sceneID="tFn-0T-vOp">
             <objects>
-                <viewController id="2KJ-9Z-DtZ" userLabel="Gestation Check View Controller" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="YUm-1A-lQk">
+                <viewController id="d1V-3i-4yz" customClass="DecisionViewController" customModule="InfantCooling" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="i7t-os-Dfv">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JTD-8d-fl6" userLabel="YesButton">
-                                <rect key="frame" x="-1.7861271676297292" y="376" width="375.00000000000006" height="59.999999999999986"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <state key="normal" title="Yes"/>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qma-dr-uKy" userLabel="NoButton">
-                                <rect key="frame" x="-1.7861271676297292" y="429" width="375.00000000000006" height="59.999999999999979"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <state key="normal" title="No"/>
-                                <connections>
-                                    <segue destination="sxJ-Ru-9Kl" kind="show" id="ZZw-H0-nhO"/>
-                                </connections>
-                            </button>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" text="Gestation &gt;= 35 weeks?" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="L9E-bH-7Zy" userLabel="GestationText">
-                                <rect key="frame" x="-1.7861271676297292" y="314.00000000000011" width="375.00000000000006" height="55.000000000000071"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <accessibility key="accessibilityConfiguration">
-                                    <accessibilityTraits key="traits" notEnabled="YES"/>
-                                </accessibility>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="42"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="SFY-cb-P9m"/>
+                        <viewLayoutGuide key="safeArea" id="aar-j8-Yx0"/>
                     </view>
+                    <connections>
+                        <outlet property="View" destination="i7t-os-Dfv" id="xKs-3V-8sx"/>
+                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Q1B-ga-J9T" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="s0n-uE-huP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="920.79999999999995" y="20.689655172413794"/>
-        </scene>
-        <!--ShouldCoolInfantScene-->
-        <scene sceneID="LIj-N9-gr7">
-            <objects>
-                <viewController id="Zwo-ZI-rTJ" userLabel="ShouldCoolInfantScene" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Yoa-8I-jfS">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" text="Cool infant" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uhC-N9-h1n" userLabel="CoolInfantText">
-                                <rect key="frame" x="-1.7861271676297292" y="379" width="375.00000000000006" height="55.000000000000227"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <accessibility key="accessibilityConfiguration">
-                                    <accessibilityTraits key="traits" notEnabled="YES"/>
-                                </accessibility>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="42"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0xp-hS-dqK" userLabel="RestartButton">
-                                <rect key="frame" x="-1.7861271676297292" y="442" width="375.00000000000006" height="60"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <state key="normal" title="Restart"/>
-                                <connections>
-                                    <segue destination="2KJ-9Z-DtZ" kind="show" id="YJN-Ng-N66"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="csm-Zq-kz4"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="sKf-nK-N2z" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="921" y="952"/>
-        </scene>
-        <!--ShouldntCoolInfantScene-->
-        <scene sceneID="6pB-gY-XA3">
-            <objects>
-                <viewController id="sxJ-Ru-9Kl" userLabel="ShouldntCoolInfantScene" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="0QC-6T-cFV">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" text="Do not cool infant" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hY0-8K-8Sl" userLabel="DontCoolInfanttext">
-                                <rect key="frame" x="-1.1213872832365723" y="379" width="374.99999999999989" height="55.000000000000227"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <accessibility key="accessibilityConfiguration">
-                                    <accessibilityTraits key="traits" notEnabled="YES"/>
-                                </accessibility>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="42"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kis-Sx-43M" userLabel="RestartButton">
-                                <rect key="frame" x="-1.1213872832365723" y="442" width="374.99999999999989" height="60"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <state key="normal" title="Restart"/>
-                                <connections>
-                                    <segue destination="2KJ-9Z-DtZ" kind="show" id="A2K-yL-I46"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="QH7-kB-GHO"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="V2g-9L-Blj" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="41" y="952"/>
+            <point key="canvasLocation" x="1068" y="20.689655172413794"/>
         </scene>
     </scenes>
     <resources>
         <image name="DukeHealthIcon" width="1200" height="1445"/>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="YJN-Ng-N66"/>
-    </inferredMetricsTieBreakers>
 </document>
