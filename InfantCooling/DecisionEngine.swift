@@ -19,6 +19,7 @@ class DecisionEngine {
     
     private let controller: DecisionEngineController;
     private var decisionMade = false;
+    private var done = false;
     
     //individual question to be asked to user
     class Sample {
@@ -59,14 +60,16 @@ class DecisionEngine {
     
     init(controller: DecisionEngineController) {
         self.controller = controller;
-        CheckIfShouldCool();
+        CallCheckIfShouldCool();
     }
     
-    //interface for controller clearing state
-    func clear() {
+    //interface for controller clearing state, prompting the next CheckIfShouldCool call
+    func Clear() {
         for sample in samples {
             sample.Reset();
         }
+        done = false;
+        CallCheckIfShouldCool();
     }
     
     //interface for controller answering a question, prompting the next CheckIfShouldCool call
@@ -76,10 +79,37 @@ class DecisionEngine {
                 sample.SetPass(value: value);
             }
         }
-        CheckIfShouldCool();
+        
+        CallCheckIfShouldCool();
     }
     
-    private func CheckIfShouldCool() {
+    enum Result {
+        case proceed
+        case fail
+        case request
+    }
+    
+    private func CallCheckIfShouldCool() {
+        if (done) {
+            return;
+        }
+        
+        let r = CheckIfShouldCool();
+        switch (r) {
+        case .request:
+            return
+        case .proceed:
+            controller.DecisionReachedShouldProceed();
+            done = true;
+            return
+        case .fail:
+            controller.DecisionReachedShouldNotCool();
+            done = true;
+            return
+        }
+    }
+    
+    private func CheckIfShouldCool() -> Result {
         //sample references for easy of use as dictated in Cooling Criteria for Inborn and Outborn Infants
         let gestationSample = samples[0];
         let sample2 = samples[1];
@@ -95,69 +125,62 @@ class DecisionEngine {
         
         //handle gestation first
         if (!Sourced(sample: gestationSample)) {
-            return;
+            return .request;
         }
         if (!gestationSample.pass) {
             controller.DecisionReachedShouldNotCool();
-            return;
+            return .fail;
         }
         
         //check which of the two paths we fall in
         if (!Sourced(sample: bloodGasAvailableSample)) {
-            return;
+            return .request;
         }
         if (!Sourced(sample: phRangeAndBaseDeficit)) {
-            return;
+            return .request;
         }
         
         //run logic, call delegates at leaves
         if (phRangeAndBaseDeficit.pass || !bloodGasAvailableSample.pass) {
             //A2:  2 and (3 or 6)
             if (!Sourced(sample: sample2)) {
-                return;
+                return.request;
             }
             if (!sample2.pass) {
-                controller.DecisionReachedShouldNotCool();
-                return;
+                return.fail;
             } else {
                 
                 if (!Sourced(sample: sample3)) {
-                    return;
+                    return.request;
                 }
                 if (sample3.pass) {
-                    controller.DecisionReachedShouldProceed();
-                    return;
+                    return .proceed;
                 }
                 
                 if (!Sourced(sample: sample6)) {
-                    return;
+                    return.request;
                 }
                 if (sample6.pass) {
-                    controller.DecisionReachedShouldProceed();
-                    return;
+                    return.proceed;
                 }
-                controller.DecisionReachedShouldNotCool();
-                return;
+                return.fail;
             }
             
         } else {
             //A1:  4 or 5
             if (!Sourced(sample: sample4)) {
-                return;
+                return.request;
             }
             if (sample4.pass) {
-                controller.DecisionReachedShouldProceed();
-                return;
+                return.proceed;
             }
             if (!Sourced(sample: sample5)) {
-                return;
+                return.request;
             }
             if (sample5.pass) {
-                controller.DecisionReachedShouldProceed();
-                return;
+                return.proceed;
             }
-            controller.DecisionReachedShouldNotCool();
-            return;
+            return .fail;
         }
     }
     
