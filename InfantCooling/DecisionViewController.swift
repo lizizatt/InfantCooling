@@ -17,6 +17,9 @@ class DecisionViewController: UIViewController {
     private let space : CGFloat = 5;
     private let yesNoButtonHeight : CGFloat = 100;
     
+    var questions = [""];
+    var answers = [""];
+    
     enum UIState {
         case question
         case done
@@ -28,7 +31,7 @@ class DecisionViewController: UIViewController {
     
     let questionField : UILabel = {
         let txt = UILabel()
-        txt.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+        txt.text = ""
         txt.tintColor = .white
         txt.layer.cornerRadius = 5
         txt.clipsToBounds = true
@@ -82,6 +85,7 @@ class DecisionViewController: UIViewController {
         return btn
     }()
     
+    //init
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -105,6 +109,7 @@ class DecisionViewController: UIViewController {
         decisionEngine = DecisionEngine(controller: dc);
     }
     
+    //callbacks from engine
     func DecisionReachedShouldProceed() -> Void {
         SetButtonState(state: .done);
         questionField.text = "Proceed to neurological examination."
@@ -124,18 +129,20 @@ class DecisionViewController: UIViewController {
         refineAutoLayout(); //resize text
     }
     
+    //button callback
     @objc func buttonPressed(_ sender: UIButton?) {
         if (sender == yesButton) {
-            decisionEngine?.AnswerQuestion(question: question, value: true);
+            decisionEngine?.AnswerQuestion(value: true);
         }
         if (sender == noButton) {
-            decisionEngine?.AnswerQuestion(question: question, value: false);
+            decisionEngine?.AnswerQuestion(value: false);
         }
         if (sender == resetButton) {
             decisionEngine?.Clear();
         }
     }
     
+    //layout of view
     func setUpAutoLayout() {
         yesButton.leftAnchor.constraint(equalTo:view.safeAreaLayoutGuide.leftAnchor, constant: space).isActive = true;
         yesButton.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.centerXAnchor, constant: -space/2).isActive = true;
@@ -183,6 +190,7 @@ class DecisionViewController: UIViewController {
         resetButton.layer.borderWidth = 1;
     }
     
+    //state utility
     func SetButtonState(state : UIState) {
         switch (state) {
         case .question:

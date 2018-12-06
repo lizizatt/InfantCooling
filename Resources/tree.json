@@ -1,0 +1,99 @@
+{
+	"questions": {
+		"Gestation": "Gestation > 35 Weeks?",
+		"2": "Acute perinatal event?",
+		"3": "Apgar <=5 at 10 minutes",
+		"4": "pH < 7.0 at < 1 hour",
+		"5": "Base deficit > 16 mEq/L at < 1 hour",
+		"BloodGas": "Blood gas available?",
+		"phRange": "7.0 < pH < 7.15",
+		"BaseDeficitRange": "10 < base deficit < 15.9mEq/L"
+	},
+	"leaves": {
+		"doNotCool": "Do not cool infant",
+		"proceed": "Proceed to neurological evaluation."
+	},
+	"branches": [
+		{
+			"question": "Gestation",
+			"pass": {
+				"question": "BloodGas"
+			},
+			"fail": {
+				"leaf": "doNotCool"
+			}
+		},
+		{
+			"question": "BloodGas",
+			"pass": {
+				"question": "phRange"
+			},
+			"fail": {
+				"question": "2"
+			}
+		},
+		{
+			"question": "phRange",
+			"pass": {
+				"question": "BaseDeficitRange"
+			},
+			"fail": {
+				"question": "4"
+			}
+		},
+		{
+			"question": "BaseDeficitRange",
+			"pass": {
+				"question": "2"
+			},
+			"fail": {
+				"question": "4"
+			}
+		},
+		{
+			"question": "2",
+			"pass": {
+				"question": "3"
+			},
+			"fail": {
+				"leaf": "doNotCool"
+			}
+		},
+		{
+			"question": "3",
+			"pass": {
+				"leaf": "Proceed"
+			},
+			"fail": {
+				"question": "6"
+			}
+		},
+		{
+			"question": "6",
+			"pass": {
+				"leaf": "Proceed"
+			},
+			"fail": {
+				"leaf": "doNotCool"
+			}
+		},
+		{
+			"question": "4",
+			"pass": {
+				"leaf": "Proceed"
+			},
+			"fail": {
+				"questino": "5"
+			}
+		},
+		{
+			"question": "5",
+			"pass": {
+				"leaf": "Proceed"
+			},
+			"fail": {
+				"leaf": "doNotCool"
+			}
+		},
+	]
+}
