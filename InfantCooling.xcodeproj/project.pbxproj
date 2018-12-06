@@ -439,8 +439,9 @@
 		6EE0788D21AB619E005930CC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LM249CNK9Z;
 				INFOPLIST_FILE = InfantCooling/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -456,8 +457,9 @@
 		6EE0788E21AB619E005930CC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-1";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = LM249CNK9Z;
 				INFOPLIST_FILE = InfantCooling/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
