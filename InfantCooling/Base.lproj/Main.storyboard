@@ -17,9 +17,9 @@
                     <view key="view" contentMode="scaleToFill" id="i7t-os-Dfv">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="aar-j8-Yx0"/>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
                         <outlet property="View" destination="i7t-os-Dfv" id="xKs-3V-8sx"/>
                     </connections>
