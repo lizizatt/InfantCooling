@@ -14,13 +14,18 @@ class InfantCoolingTests: XCTestCase {
     var dc : DecisionEngineController?;
     var engine : DecisionEngine?;
     
-    private var didRecieveProceedCallback = false;
-    private var didRecieveFailCallback = false;
+    private var didRecieveDecisionCallback = false;
+    private var decision = "";
     private var didRecieveQuestionCallback = false;
     private var question = "";
     
     override func setUp() {
-        dc = DecisionEngineController(DecisionReachedShouldProceed: ProceedCallback, DecisionReachedShouldNotCool: FailCallback, NewQuestionToDisplay: QuestionCallback);
+        didRecieveQuestionCallback = false;
+        didRecieveDecisionCallback = false;
+        decision = "";
+        question = "";
+        
+        dc = DecisionEngineController(DecisionReached: DecisionCallback, NewQuestionToDisplay: QuestionCallback);
         if let dcResolved = dc {
             engine = DecisionEngine(controller: dcResolved);
         }
@@ -36,34 +41,21 @@ class InfantCoolingTests: XCTestCase {
             
             //init should have created the first question callback and nothing else
             XCTAssert(didRecieveQuestionCallback, "Should have recieved question callback");
-            XCTAssert(!didRecieveFailCallback, "Should not have recieved fail callback");
-            XCTAssert(!didRecieveProceedCallback, "Should not have recieved proceed callback");
-            
-            //reset flag
-            didRecieveQuestionCallback = false;
+            XCTAssert(!didRecieveDecisionCallback, "Should not have recieved decision callback");
             
             
             while (true) {
                 //answer true to everything, making sure we eventually get a proceed or fail callback
-                engine.AnswerQuestion(question: question, value: true);
+                engine.AnswerQuestion(value: true);
                 
                 if (didRecieveQuestionCallback) {
                     didRecieveQuestionCallback = false;
                     continue;
                 }
                 
-                if (didRecieveFailCallback) {
+                if (didRecieveDecisionCallback) {
                     XCTAssert(!didRecieveQuestionCallback, "Should not have recieved a question callback");
-                    XCTAssert(!didRecieveProceedCallback, "Should not have recieved proceed callback");
-                    didRecieveFailCallback = false;
-                    break;
-                }
-                
-                
-                if (didRecieveProceedCallback) {
-                    XCTAssert(!didRecieveQuestionCallback, "Should not have recieved a question callback");
-                    XCTAssert(!didRecieveFailCallback, "Should have recieved fail callback");
-                    didRecieveProceedCallback = false;
+                    didRecieveDecisionCallback = false;
                     break;
                 }
                 
@@ -71,18 +63,14 @@ class InfantCoolingTests: XCTestCase {
             }
             
         } else {
-            XCTAssert(false, "Engine not resolved.");
+            XCTAssert(false, "Engine not     resolved.");
         }
     }
     
-    func ProceedCallback() {
-        didRecieveProceedCallback = true;
+    func DecisionCallback(decision : String) {
+        didRecieveDecisionCallback = true;
+        self.decision = decision;
     }
-    
-    func FailCallback() {
-        didRecieveFailCallback = true;
-    }
-    
     func QuestionCallback(question : String) {
         didRecieveQuestionCallback = true;
         self.question = question;
