@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "InfantCoolingTests/InfantCoolingTests.swift"
-            timestampString = "565779965.418685"
+            timestampString = "565861010.499688"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "43"
@@ -26,7 +26,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "InfantCoolingTests/InfantCoolingTests.swift"
-            timestampString = "565779965.418792"
+            timestampString = "565861010.5003541"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "70"
@@ -42,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "InfantCoolingTests/InfantCoolingTests.swift"
-            timestampString = "565779965.418851"
+            timestampString = "565861010.500446"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "72"
@@ -58,12 +58,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "InfantCooling/DecisionEngine.swift"
-            timestampString = "565779965.418903"
+            timestampString = "565861010.500506"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
+            startingLineNumber = "203"
+            endingLineNumber = "203"
             landmarkName = "AskQuestion()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "InfantCooling/DecisionEngine.swift"
+            timestampString = "565861010.501467"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "188"
+            endingLineNumber = "188"
+            landmarkName = "AnswerQuestion(value:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

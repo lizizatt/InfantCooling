@@ -105,24 +105,18 @@ class DecisionViewController: UIViewController {
         setUpAutoLayout();
         setUpColors();
         
-        let dc = DecisionEngineController(DecisionReachedShouldProceed: DecisionReachedShouldProceed, DecisionReachedShouldNotCool: DecisionReachedShouldNotCool, NewQuestionToDisplay: NewQuestionToDisplay);
+        let dc = DecisionEngineController(DecisionReached: DecisionReached, NewQuestionToDisplay: NewQuestionToDisplay);
         decisionEngine = DecisionEngine(controller: dc);
     }
     
     //callbacks from engine
-    func DecisionReachedShouldProceed() -> Void {
-        SetButtonState(state: .done);
-        questionField.text = "Proceed to neurological examination."
+    func DecisionReached(decision : String) {
+        SetButtonState(state: .done)
+        questionField.text = decision;
         refineAutoLayout(); //resize text
     }
     
-    func DecisionReachedShouldNotCool() -> Void {
-        SetButtonState(state: .done);
-        questionField.text = "Do not cool infant."
-        refineAutoLayout(); //resize text
-    }
-    
-    func NewQuestionToDisplay(question: String) -> Void {
+    func NewQuestionToDisplay(question: String) {
         SetButtonState(state: .question);
         questionField.text = question;
         self.question = question;
