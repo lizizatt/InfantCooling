@@ -58,13 +58,10 @@ class DecisionViewController: UIViewController {
         decisionEngine!.ClearAndStart();
     }
     
+    //Called once by DecisionEngine once tree is generated but question has not been asked yet
+    //Determine a layout and draw out the decision tree in our frame
     func SetUpTree(tree: DecisionEngine.Tree)
     {
-        for node in nodeViews {
-            node.removeFromSuperview()
-        }
-        nodeViews.removeAll()
-        
         var x = 0
         var y = 0
      
@@ -88,10 +85,10 @@ class DecisionViewController: UIViewController {
             
             x += 250
         }
-        
-        
     }
     
+    //DecisionEngine respondin to a question being answered with the next node
+    //Focus on it in the view
     func FocusOnNode(node: DecisionEngine.Node)
     {
         let pos = nodesPositionDictionary[node];

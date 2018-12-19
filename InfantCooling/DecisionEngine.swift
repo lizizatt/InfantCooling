@@ -21,6 +21,7 @@ class DecisionEngine {
     
     private var tree : Tree?
     private var currentBranch : Branch?
+    private var hasCalledSetUpTree = false;
     
     //json format
     class Node : Hashable {
@@ -192,7 +193,10 @@ class DecisionEngine {
     func ClearAndStart() {
         currentBranch = tree?.branches[0];
         
-        controller.SetUpTree(tree!);
+        if (!hasCalledSetUpTree) {
+            controller.SetUpTree(tree!);
+            hasCalledSetUpTree = true;
+        }
         
         AskQuestion();
     }
