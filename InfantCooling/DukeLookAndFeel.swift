@@ -29,4 +29,6 @@ class DukeLookAndFeel {
     
     //whites
     static let coolGray = UIColor(red:0.90, green:0.90, blue:0.90, alpha:1.0);
+    
+    static let clear = UIColor(red:0.0, green:0.0, blue:0.0, alpha:0.0);
 }

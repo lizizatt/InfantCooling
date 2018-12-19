@@ -11,8 +11,8 @@ import UIKit
 
 
 struct DecisionEngineController {
-    var DecisionReached: (String) -> Void?;
-    var NewQuestionToDisplay: (String) -> Void?;
+    var SetUpTree: (DecisionEngine.Tree) -> Void;
+    var FocusOnNode: (DecisionEngine.Node) -> Void;
 }
 
 class DecisionEngine {
@@ -23,7 +23,23 @@ class DecisionEngine {
     private var currentBranch : Branch?
     
     //json format
-    struct Tree: Decodable {
+    class Node : Hashable {
+        var maxDepth : Int = -1;
+        
+        static func == (lhs: Node, rhs: Node) -> Bool {
+            return lhs.getID() == rhs.getID() && lhs.getID() == rhs.getID()
+        }
+        
+        func getID() -> String {
+            return "";
+        }
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(getID())
+        }
+    }
+
+    class Tree: Decodable {
         let questions: [Question]
         let leaves: [Leaf]
         let branches: [Branch]
@@ -34,15 +50,23 @@ class DecisionEngine {
             self.branches = branches
         }
     }
-    struct Question: Decodable {
+    class Question: Node, Decodable {
         let id : String;
         let question : String;
+        
+        override func getID() -> String {
+            return id;
+        }
     }
-    struct Leaf: Decodable {
+    class Leaf: Node, Decodable {
         let id : String;
         let result : String;
+        
+        override func getID() -> String {
+            return id;
+        }
     }
-    struct Branch: Decodable {
+    class Branch: Decodable {
         let question: String
         let pass: String
         let fail: String
@@ -162,24 +186,27 @@ class DecisionEngine {
         
         //should have Tree now, start the first branch
         currentBranch = tree?.branches[0];
-        AskQuestion();
     }
     
     //interface for controller clearing state, prompting the next CheckIfShouldCool call
-    func Clear() {
+    func ClearAndStart() {
         currentBranch = tree?.branches[0];
+        
+        controller.SetUpTree(tree!);
+        
         AskQuestion();
     }
     
     //interface for controller providing the answer to the most recently requested question
-    func AnswerQuestion(value : Bool) {
+    func AnswerQuestion(question : String, value : Bool) {
+        
         if let tree = tree {
             let toFind = value ? currentBranch?.pass : currentBranch?.fail;
             
             //check leaves
             for leaf in tree.leaves {
                 if (leaf.id.lowercased() == toFind?.lowercased()) {
-                    controller.DecisionReached(leaf.result);
+                    controller.FocusOnNode(leaf);
                     return;
                 }
             }
@@ -200,7 +227,7 @@ class DecisionEngine {
         if let tree = tree {
             for question in tree.questions {
                 if (question.id == currentBranch?.question) {
-                    controller.NewQuestionToDisplay(question.question);
+                    controller.FocusOnNode(question);
                     return;
                 }
             }
