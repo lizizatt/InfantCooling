@@ -60,6 +60,11 @@ class DecisionViewController: UIViewController {
     
     func SetUpTree(tree: DecisionEngine.Tree)
     {
+        for node in nodeViews {
+            node.removeFromSuperview()
+        }
+        nodeViews.removeAll()
+        
         var x = 0
         var y = 0
      
@@ -69,11 +74,11 @@ class DecisionViewController: UIViewController {
             nodeViews.append(QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y))
             view.addSubview(nodeViews[nodeViews.count - 1])
             
-            x += 300
+            x += 250
         }
         
         x = 0
-        y += 500;
+        y += 300;
         
         for leaf in tree.leaves {
             nodesPositionDictionary[leaf] = CGVector(dx: x, dy: y)
@@ -81,7 +86,7 @@ class DecisionViewController: UIViewController {
             nodeViews.append(LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y))
             view.addSubview(nodeViews[nodeViews.count - 1])
             
-            x += 300
+            x += 250
         }
         
         

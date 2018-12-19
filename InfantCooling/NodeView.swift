@@ -63,9 +63,14 @@ class LeafNode : Node {
     }
     
     override func setOffset(vec : CGVector) {
-        let x = vec.dx;
-        let y = vec.dy;
-        frame = defaultFrame.offsetBy(dx: x - frame.width / 2, dy: y - frame.height / 2);
+        
+        let x = vec.dx - frame.width / 2;
+        let y = vec.dy - frame.height / 2;
+        
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut, animations: {
+            self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
+        })
+        
     }
     
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -172,9 +177,12 @@ class QueryNode : Node {
     }
     
     override func setOffset(vec : CGVector) {
-        let x = vec.dx;
-        let y = vec.dy;
-        frame = defaultFrame.offsetBy(dx: x - frame.width / 2, dy: y - frame.height / 2);
+        let x = vec.dx - frame.width / 2;
+        let y = vec.dy - frame.height / 2;
+        
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut, animations: {
+            self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
+        })
     }
     
     @objc func buttonPressed(_ sender: UIButton?) {
