@@ -20,8 +20,7 @@ class LeafNode : Node {
     
     private let space : CGFloat = 5;
     private let nodeConnectDistance : CGFloat = 20;
-    private let width = 200;
-    private let height = 200;
+    
     private var defaultFrame : CGRect;
     
     let resultField : UILabel = {
@@ -39,7 +38,7 @@ class LeafNode : Node {
         return txt
     }()
     
-    init(result : String, engine: DecisionEngine, initialX : Int, initialY : Int) {
+    init(result : String, engine: DecisionEngine, initialX : CGFloat, initialY : CGFloat, width : CGFloat, height : CGFloat) {
         
         self.engine = engine;
         self.result = result;
@@ -101,8 +100,6 @@ class QueryNode : Node {
     private let space : CGFloat = 5;
     private let yesNoButtonHeight : CGFloat = 50;
     private let nodeConnectDistance : CGFloat = 20;
-    private let width = 200;
-    private let height = 200;
     private var defaultFrame : CGRect;
     
     let questionField : UILabel = {
@@ -148,7 +145,7 @@ class QueryNode : Node {
         return btn
     }()
     
-    init(question : String, engine: DecisionEngine, initialX : Int, initialY : Int) {
+    init(question : String, engine: DecisionEngine, initialX : CGFloat, initialY : CGFloat, width : CGFloat, height : CGFloat) {
         
         self.engine = engine;
         self.question = question;

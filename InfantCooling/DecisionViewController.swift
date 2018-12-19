@@ -19,6 +19,12 @@ class DecisionViewController: UIViewController {
     private var nodesPositionDictionary = [DecisionEngine.Node: CGVector]()
     private var nodeViews = [Node]()
     
+    
+    let questionWidth : CGFloat = 0.66;
+    let questionHeight: CGFloat = 0.25;
+    let leafWidth : CGFloat = 0.5;
+    let leafHeight : CGFloat = 0.25;
+    
     var questions = [""];
     var answers = [""];
     
@@ -62,28 +68,30 @@ class DecisionViewController: UIViewController {
     //Determine a layout and draw out the decision tree in our frame
     func SetUpTree(tree: DecisionEngine.Tree)
     {
-        var x = 0
-        var y = 0
      
+        var x : CGFloat = 0
+        var y : CGFloat = 0
+        
         for question in tree.questions {
             nodesPositionDictionary[question] = CGVector(dx: x, dy: y)
             
-            nodeViews.append(QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y))
+            nodeViews.append(QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y, width: view.frame.width * questionWidth, height: view.frame.height * questionHeight))
             view.addSubview(nodeViews[nodeViews.count - 1])
             
-            x += 250
+            x += view.frame.width * questionWidth + 20
         }
         
         x = 0
-        y += 300;
+        y += view.frame.height * questionHeight + 20;
+        
         
         for leaf in tree.leaves {
             nodesPositionDictionary[leaf] = CGVector(dx: x, dy: y)
             
-            nodeViews.append(LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y))
+            nodeViews.append(LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y, width: view.frame.width * leafWidth, height: view.frame.height * leafHeight))
             view.addSubview(nodeViews[nodeViews.count - 1])
             
-            x += 250
+            x += view.frame.width * leafWidth
         }
     }
     
