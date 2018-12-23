@@ -20,10 +20,8 @@ class DecisionViewController: UIViewController {
     private var nodeViews = [Node]()
     
     
-    let questionWidth : CGFloat = 0.66;
-    let questionHeight: CGFloat = 0.25;
-    let leafWidth : CGFloat = 0.5;
-    let leafHeight : CGFloat = 0.25;
+    let nodeWidth : CGFloat = 0.66;
+    let nodeHeight: CGFloat = 0.25;
     
     var questions = [""];
     var answers = [""];
@@ -68,30 +66,38 @@ class DecisionViewController: UIViewController {
     //Determine a layout and draw out the decision tree in our frame
     func SetUpTree(tree: DecisionEngine.Tree)
     {
-     
-        var x : CGFloat = 0
-        var y : CGFloat = 0
+        var nodes = [Int:[DecisionEngine.Node]]()
         
-        for question in tree.questions {
-            nodesPositionDictionary[question] = CGVector(dx: x, dy: y)
-            
-            nodeViews.append(QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y, width: view.frame.width * questionWidth, height: view.frame.height * questionHeight))
-            view.addSubview(nodeViews[nodeViews.count - 1])
-            
-            x += view.frame.width * questionWidth + 20
+        for node in tree.getAllNodes() {
+            if (nodes[node.maxDepth] == nil) {
+                nodes[node.maxDepth] = [DecisionEngine.Node]()
+            }
+            nodes[node.maxDepth]?.append(node)
         }
+     
         
-        x = 0
-        y += view.frame.height * questionHeight + 20;
-        
-        
-        for leaf in tree.leaves {
-            nodesPositionDictionary[leaf] = CGVector(dx: x, dy: y)
+        for level in nodes.keys {
+            let numInLevel : CGFloat = CGFloat(nodes[level]!.count);
             
-            nodeViews.append(LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y, width: view.frame.width * leafWidth, height: view.frame.height * leafHeight))
-            view.addSubview(nodeViews[nodeViews.count - 1])
+            let h = nodeHeight * view.frame.height
+            let y : CGFloat = CGFloat(level) * h * 1.5
             
-            x += view.frame.width * leafWidth
+            let w = nodeWidth * view.frame.width
+            var x = numInLevel / -2.0 * w
+            let dX = w * 1.5
+            for node in nodes[level]! {
+                if let question = node as? DecisionEngine.Question {
+                    nodeViews.append(QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
+                    view.addSubview(nodeViews[nodeViews.count - 1])
+                    nodesPositionDictionary[question] = CGVector(dx: x, dy: y)
+                }
+                if let leaf = node as? DecisionEngine.Leaf {
+                    nodeViews.append(LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
+                    view.addSubview(nodeViews[nodeViews.count - 1])
+                    nodesPositionDictionary[leaf] = CGVector(dx: x, dy: y)
+                }
+                x += dX
+            }
         }
     }
     

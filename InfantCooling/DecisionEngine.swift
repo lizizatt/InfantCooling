@@ -104,6 +104,27 @@ class DecisionEngine {
             }
         }
         
+        func getAllNodes() -> [Node] {
+            var toRet : [Node] = []
+            for question in questions {
+                toRet.append(question)
+            }
+            for leaf in leaves {
+                toRet.append(leaf)
+            }
+            return toRet;
+        }
+        
+        func getMaxDepth() -> Int {
+            var max = -1;
+            for node in getAllNodes() {
+                if node.maxDepth > max {
+                    max = node.maxDepth;
+                }
+            }
+            return max;
+        }
+        
         func getQuestion(withId : String) -> Question? {
             for question in questions {
                 if question.getID().lowercased() == withId.lowercased() {
