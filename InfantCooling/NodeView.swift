@@ -10,7 +10,8 @@ import Foundation
 import UIKit
 
 class Node: UIView {
-    func setOffset(vec : CGVector) {
+    let ANIMATION_DURATION : Double = 1;
+    func setOffset(vec : CGVector, animate : Bool) {
     }
 }
 
@@ -61,12 +62,16 @@ class LeafNode : Node {
         fatalError("This class does not support NSCoding")
     }
     
-    override func setOffset(vec : CGVector) {
+    override func setOffset(vec : CGVector, animate : Bool) {
         
         let x = vec.dx - frame.width / 2;
         let y = vec.dy - frame.height / 2;
         
-        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut, animations: {
+        var duration = ANIMATION_DURATION;
+        if (!animate) {
+            duration = 0;
+        }
+        UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseOut, animations: {
             self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
         })
         
@@ -173,11 +178,16 @@ class QueryNode : Node {
         fatalError("This class does not support NSCoding")
     }
     
-    override func setOffset(vec : CGVector) {
+    override func setOffset(vec : CGVector, animate: Bool) {
         let x = vec.dx - frame.width / 2;
         let y = vec.dy - frame.height / 2;
         
-        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut, animations: {
+        var duration = ANIMATION_DURATION;
+        if (!animate) {
+            duration = 0;
+        }
+        
+        UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseOut, animations: {
             self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
         })
     }

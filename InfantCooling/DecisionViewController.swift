@@ -19,6 +19,8 @@ class DecisionViewController: UIViewController {
     private var nodesPositionDictionary = [DecisionEngine.Node: CGVector]()
     private var nodeViews = [Node]()
     
+    private var firstDraw = false;
+    
     
     let nodeWidth : CGFloat = 0.66;
     let nodeHeight: CGFloat = 0.25;
@@ -107,8 +109,9 @@ class DecisionViewController: UIViewController {
     {
         let pos = nodesPositionDictionary[node];
         for node in nodeViews {
-            node.setOffset(vec: CGVector(dx: -pos!.dx + view.frame.width / 2, dy: -pos!.dy + view.frame.height / 2))
+            node.setOffset(vec: CGVector(dx: -pos!.dx + view.frame.width / 2, dy: -pos!.dy + view.frame.height / 2), animate: firstDraw)
         }
+        firstDraw = true;
     }
     
     //button callback
