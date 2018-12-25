@@ -9,8 +9,14 @@
 import Foundation
 import UIKit
 
+//utility for CGVector
+func +(left: CGVector, right: CGVector) -> CGVector {
+    return CGVector(dx: left.dx + right.dx, dy: left.dy + right.dy)
+}
+
 class DecisionViewController: UIViewController {
-    
+    static let ANIMATION_DURATION : Double = 1;
+
     private var decisionEngine : DecisionEngine?;
     
     private let space : CGFloat = 5;
@@ -18,6 +24,7 @@ class DecisionViewController: UIViewController {
     
     private var nodesPositionDictionary = [DecisionEngine.Node: CGVector]()
     private var nodeViews = [Node]()
+    private var lineViews = [LineView]()
     
     private var firstDraw = false;
     
@@ -77,14 +84,14 @@ class DecisionViewController: UIViewController {
             nodes[node.maxDepth]?.append(node)
         }
      
+        let w = nodeWidth * view.frame.width
+        let h = nodeHeight * view.frame.height
         
         for level in nodes.keys {
             let numInLevel : CGFloat = CGFloat(nodes[level]!.count);
             
-            let h = nodeHeight * view.frame.height
             let y : CGFloat = CGFloat(level) * h * 1.5
             
-            let w = nodeWidth * view.frame.width
             var x = numInLevel / -2.0 * w
             let dX = w * 1.5
             for node in nodes[level]! {
@@ -101,6 +108,27 @@ class DecisionViewController: UIViewController {
                 x += dX
             }
         }
+        
+        for node in tree.getAllNodes() {
+            if let left = node.left {
+                let lv = LineView(start: nodesPositionDictionary[node]!, end: nodesPositionDictionary[left]!);
+                lineViews.append(lv);
+                view.addSubview(lv);
+            }
+            if let right = node.right {
+                let lv = LineView(start: nodesPositionDictionary[node]!, end: nodesPositionDictionary[right]!);
+                lineViews.append(lv);
+                view.addSubview(lv);
+            }
+        }
+        
+        for line in lineViews {
+            view.sendSubviewToBack(line)
+        }
+        for node in nodeViews {
+            view.bringSubviewToFront(node)
+        }
+        view.bringSubviewToFront(resetButton)
     }
     
     //DecisionEngine respondin to a question being answered with the next node
@@ -108,8 +136,12 @@ class DecisionViewController: UIViewController {
     func FocusOnNode(node: DecisionEngine.Node)
     {
         let pos = nodesPositionDictionary[node];
+        let offset = CGVector(dx: -pos!.dx + view.frame.width / 2, dy: -pos!.dy + view.frame.height / 2)
         for node in nodeViews {
-            node.setOffset(vec: CGVector(dx: -pos!.dx + view.frame.width / 2, dy: -pos!.dy + view.frame.height / 2), animate: firstDraw)
+            node.setOffset(vec: offset, animate: firstDraw)
+        }
+        for line in lineViews {
+            line.setOffset(vec: offset, animate: firstDraw)
         }
         firstDraw = true;
     }
@@ -133,11 +165,9 @@ class DecisionViewController: UIViewController {
         view.backgroundColor = DukeLookAndFeel.black;
         
         resetButton.setTitleColor(DukeLookAndFeel.coolGray, for: .normal);
-        
         resetButton.setTitleShadowColor(DukeLookAndFeel.black, for: .normal);
-    
         resetButton.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
-        
         resetButton.layer.borderWidth = 1;
+        resetButton.backgroundColor = DukeLookAndFeel.black;
     }
 }

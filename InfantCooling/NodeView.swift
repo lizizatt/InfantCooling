@@ -95,6 +95,8 @@ class LeafNode : Node {
     
     func setUpColors() {
         resultField.textColor = DukeLookAndFeel.coolGray;
+        
+        backgroundColor = DukeLookAndFeel.black
     }
 }
 
@@ -241,5 +243,6 @@ class QueryNode : Node {
         yesButton.layer.borderWidth = 1;
         noButton.layer.borderWidth = 1;
         
+        backgroundColor = DukeLookAndFeel.black
     }
 }
