@@ -245,4 +245,9 @@ class QueryNode : Node {
         
         backgroundColor = DukeLookAndFeel.black
     }
+    
+    func setEditable(editable : Bool) {
+        noButton.isEnabled = editable;
+        yesButton.isEnabled = editable;
+    }
 }

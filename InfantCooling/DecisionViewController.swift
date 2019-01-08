@@ -133,16 +133,23 @@ class DecisionViewController: UIViewController {
     
     //DecisionEngine respondin to a question being answered with the next node
     //Focus on it in the view
-    func FocusOnNode(node: DecisionEngine.Node)
+    func FocusOnNode(decisionEngineNode: DecisionEngine.Node)
     {
-        let pos = nodesPositionDictionary[node];
+        //determine offset
+        let pos = nodesPositionDictionary[decisionEngineNode];
         let offset = CGVector(dx: -pos!.dx + view.frame.width / 2, dy: -pos!.dy + view.frame.height / 2)
+        
+        //adjust positions of everything in scene
         for node in nodeViews {
             node.setOffset(vec: offset, animate: firstDraw)
+            if let question = decisionEngineNode as? DecisionEngine.Question, let queryNode = node as? QueryNode {
+                queryNode.setEditable(editable: question.question == queryNode.question)
+            }
         }
         for line in lineViews {
             line.setOffset(vec: offset, animate: firstDraw)
         }
+        
         firstDraw = true;
     }
     
