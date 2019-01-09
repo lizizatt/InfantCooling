@@ -23,6 +23,7 @@ class DecisionViewController: UIViewController {
     private let space : CGFloat = 5;
     private let yesNoButtonHeight : CGFloat = 50;
     
+    private var nodesAccessDictionary = [DecisionEngine.Node: Node]()
     private var nodesPositionDictionary = [DecisionEngine.Node: CGVector]()
     private var nodeViews = [Node]()
     private var lineViews = [LineView]()
@@ -121,16 +122,19 @@ class DecisionViewController: UIViewController {
                     nodeViews.append(QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
                     view.addSubview(nodeViews[nodeViews.count - 1])
                     nodesPositionDictionary[question] = CGVector(dx: x, dy: y)
+                    nodesAccessDictionary[question] = nodeViews[nodeViews.count - 1]
                 }
                 if let compoundQuestion = node as? DecisionEngine.CompoundQuestion {
                     nodeViews.append(CompoundQueryNode(questions: compoundQuestion.questions, needed: compoundQuestion.needed, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
                     view.addSubview(nodeViews[nodeViews.count - 1])
                     nodesPositionDictionary[compoundQuestion] = CGVector(dx: x, dy: y)
+                    nodesAccessDictionary[compoundQuestion] = nodeViews[nodeViews.count - 1]
                 }
                 if let leaf = node as? DecisionEngine.Leaf {
                     nodeViews.append(LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
                     view.addSubview(nodeViews[nodeViews.count - 1])
                     nodesPositionDictionary[leaf] = CGVector(dx: x, dy: y)
+                    nodesAccessDictionary[leaf] = nodeViews[nodeViews.count - 1]
                 }
                 x += dX
             }
@@ -170,12 +174,7 @@ class DecisionViewController: UIViewController {
         //adjust positions of everything in scene
         for node in nodeViews {
             node.setOffset(vec: offset, animate: firstDraw)
-            if let question = decisionEngineNode as? DecisionEngine.Question, let queryNode = node as? QueryNode {
-                queryNode.setEditable(editable: question.question == queryNode.question)
-            }
-            if let question = decisionEngineNode as? DecisionEngine.CompoundQuestion, let queryNode = node as? CompoundQueryNode {
-                queryNode.setEditable(editable: question.questions == queryNode.questions)
-            }
+            node.setFocused(focused: nodesAccessDictionary[decisionEngineNode] == node)
         }
         for line in lineViews {
             line.setOffset(vec: offset, animate: firstDraw)
@@ -190,6 +189,9 @@ class DecisionViewController: UIViewController {
             decisionEngine!.ClearAndStart();
         }
         if (sender == exitButton) {
+            let context = UIGraphicsGetCurrentContext()
+            context?.clear(view.frame)
+            context?.flush()
             dismiss(animated: true)
         }
     }

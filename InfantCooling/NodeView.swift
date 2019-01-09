@@ -14,6 +14,9 @@ class Node: UIView {
     let COMPOUND_ANIMATION_DURATION : Double = 0.5;
     func setOffset(vec : CGVector, animate : Bool) {
     }
+    func setFocused(focused : Bool) {
+        
+    }
 }
 
 class LeafNode : Node {
@@ -98,6 +101,14 @@ class LeafNode : Node {
         resultField.textColor = DukeLookAndFeel.coolGray;
         
         backgroundColor = DukeLookAndFeel.black
+    }
+    
+    override func setFocused(focused : Bool) {
+        if (focused) {
+            backgroundColor = DukeLookAndFeel.blueSecondaryFaded
+        } else {
+            backgroundColor = DukeLookAndFeel.black
+        }
     }
 }
 
@@ -247,9 +258,15 @@ class QueryNode : Node {
         backgroundColor = DukeLookAndFeel.black
     }
     
-    func setEditable(editable : Bool) {
-        noButton.isEnabled = editable;
-        yesButton.isEnabled = editable;
+    override func setFocused(focused : Bool) {
+        noButton.isEnabled = focused;
+        yesButton.isEnabled = focused;
+        
+        if (focused) {
+            backgroundColor = DukeLookAndFeel.blueSecondaryFaded
+        } else {
+            backgroundColor = DukeLookAndFeel.black
+        }
     }
 }
 
@@ -443,12 +460,18 @@ class CompoundQueryNode : Node {
         backgroundColor = DukeLookAndFeel.black
     }
     
-    func setEditable(editable : Bool) {
-        noButton.isEnabled = editable;
-        yesButton.isEnabled = editable;
+    override func setFocused(focused : Bool) {
+        noButton.isEnabled = focused;
+        yesButton.isEnabled = focused;
         
         answered = 0;
         current = 0;
         setActiveQuestionField(index: 0)
+        
+        if (focused) {
+            backgroundColor = DukeLookAndFeel.blueSecondaryFaded
+        } else {
+            backgroundColor = DukeLookAndFeel.black
+        }
     }
 }
