@@ -79,6 +79,8 @@ class DecisionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.clipsToBounds = true;
+        
         let dc = DecisionEngineController(SetUpTree: SetUpTree, FocusOnNode: FocusOnNode);
         decisionEngine = DecisionEngine(controller: dc, jsonString: jsonString);
         
@@ -189,24 +191,22 @@ class DecisionViewController: UIViewController {
             decisionEngine!.ClearAndStart();
         }
         if (sender == exitButton) {
-            let context = UIGraphicsGetCurrentContext()
-            context?.clear(view.frame)
-            context?.flush()
             dismiss(animated: true)
         }
     }
     
     //layout of view
     func setUpAutoLayout() {
-        resetButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: space).isActive = true;
+        
+        exitButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: space).isActive = true;
+        exitButton.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.centerXAnchor, constant: -space / 2).isActive = true;
+        exitButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
+        exitButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -space).isActive = true;
+        
+        resetButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor, constant: space / 2).isActive = true;
         resetButton.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor, constant: -space).isActive = true;
         resetButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
         resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -space).isActive = true;
-        
-        exitButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: space).isActive = true;
-        exitButton.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor, constant: -space).isActive = true;
-        exitButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
-        exitButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: space).isActive = true;
     }
     
     func setUpColors() {
@@ -216,12 +216,12 @@ class DecisionViewController: UIViewController {
         resetButton.setTitleShadowColor(DukeLookAndFeel.black, for: .normal);
         resetButton.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
         resetButton.layer.borderWidth = 1;
-        resetButton.backgroundColor = DukeLookAndFeel.black;
+        resetButton.backgroundColor = DukeLookAndFeel.gray;
         
         exitButton.setTitleColor(DukeLookAndFeel.coolGray, for: .normal);
         exitButton.setTitleShadowColor(DukeLookAndFeel.black, for: .normal);
         exitButton.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
         exitButton.layer.borderWidth = 1;
-        exitButton.backgroundColor = DukeLookAndFeel.black;
+        exitButton.backgroundColor = DukeLookAndFeel.gray;
     }
 }

@@ -12,6 +12,7 @@ import UIKit
 class Node: UIView {
     let ANIMATION_DURATION : Double = 1;
     let COMPOUND_ANIMATION_DURATION : Double = 0.5;
+    let SPACE : CGFloat = 10;
     func setOffset(vec : CGVector, animate : Bool) {
     }
     func setFocused(focused : Bool) {
@@ -23,7 +24,6 @@ class LeafNode : Node {
     var result = "";
     var engine : DecisionEngine;
     
-    private let space : CGFloat = 5;
     private let nodeConnectDistance : CGFloat = 20;
     
     private var defaultFrame : CGRect;
@@ -116,7 +116,6 @@ class QueryNode : Node {
     var question = "";
     var engine : DecisionEngine;
     
-    private let space : CGFloat = 5;
     private let yesNoButtonHeight : CGFloat = 50;
     private let nodeConnectDistance : CGFloat = 20;
     private var defaultFrame : CGRect;
@@ -223,19 +222,19 @@ class QueryNode : Node {
     
     //layout of view
     func setUpAutoLayout() {
-        yesButton.leftAnchor.constraint(equalTo: leftAnchor, constant: space).isActive = true;
-        yesButton.rightAnchor.constraint(equalTo: centerXAnchor, constant: -space/2).isActive = true;
+        yesButton.leftAnchor.constraint(equalTo: leftAnchor, constant: SPACE).isActive = true;
+        yesButton.rightAnchor.constraint(equalTo: centerXAnchor, constant: -SPACE/2).isActive = true;
         yesButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
-        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -space - nodeConnectDistance).isActive = true;
+        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -SPACE - nodeConnectDistance).isActive = true;
         
-        noButton.leftAnchor.constraint(equalTo:yesButton.rightAnchor, constant: space).isActive = true;
-        noButton.rightAnchor.constraint(equalTo:rightAnchor, constant: -space).isActive = true;
+        noButton.leftAnchor.constraint(equalTo:yesButton.rightAnchor, constant: SPACE).isActive = true;
+        noButton.rightAnchor.constraint(equalTo:rightAnchor, constant: -SPACE).isActive = true;
         noButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
         noButton.bottomAnchor.constraint(equalTo: yesButton.bottomAnchor).isActive = true;
         
-        questionField.leftAnchor.constraint(equalTo:leftAnchor, constant: space).isActive = true;
-        questionField.rightAnchor.constraint(equalTo:rightAnchor, constant: -space).isActive = true;
-        questionField.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -space).isActive = true;
+        questionField.leftAnchor.constraint(equalTo:leftAnchor, constant: SPACE).isActive = true;
+        questionField.rightAnchor.constraint(equalTo:rightAnchor, constant: -SPACE).isActive = true;
+        questionField.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -SPACE).isActive = true;
         
         questionField.sizeToFit();
     }
@@ -277,7 +276,6 @@ class CompoundQueryNode : Node {
     
     var questionsTableView: UITableView!
     
-    private let space : CGFloat = 5;
     private let yesNoButtonHeight : CGFloat = 50;
     private let nodeConnectDistance : CGFloat = 20;
     private var defaultFrame : CGRect;
@@ -403,13 +401,13 @@ class CompoundQueryNode : Node {
     
     //layout of view
     func setUpAutoLayout() {
-        yesButton.leftAnchor.constraint(equalTo: leftAnchor, constant: space).isActive = true;
-        yesButton.rightAnchor.constraint(equalTo: centerXAnchor, constant: -space/2).isActive = true;
+        yesButton.leftAnchor.constraint(equalTo: leftAnchor, constant: SPACE).isActive = true;
+        yesButton.rightAnchor.constraint(equalTo: centerXAnchor, constant: -SPACE/2).isActive = true;
         yesButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
-        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -space - nodeConnectDistance).isActive = true;
+        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -SPACE - nodeConnectDistance).isActive = true;
         
-        noButton.leftAnchor.constraint(equalTo:yesButton.rightAnchor, constant: space).isActive = true;
-        noButton.rightAnchor.constraint(equalTo:rightAnchor, constant: -space).isActive = true;
+        noButton.leftAnchor.constraint(equalTo:yesButton.rightAnchor, constant: SPACE).isActive = true;
+        noButton.rightAnchor.constraint(equalTo:rightAnchor, constant: -SPACE).isActive = true;
         noButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
         noButton.bottomAnchor.constraint(equalTo: yesButton.bottomAnchor).isActive = true;
         
@@ -417,9 +415,9 @@ class CompoundQueryNode : Node {
         for questionField in questionFields {
             let offset = CGFloat(currentIndex) * (frame.width * 2);
             
-            questionField.leftAnchor.constraint(equalTo:leftAnchor, constant: space + offset).isActive = true;
-            questionField.rightAnchor.constraint(equalTo:rightAnchor, constant: -space + offset).isActive = true;
-            questionField.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -space).isActive = true;
+            questionField.leftAnchor.constraint(equalTo:leftAnchor, constant: SPACE + offset).isActive = true;
+            questionField.rightAnchor.constraint(equalTo:rightAnchor, constant: -SPACE + offset).isActive = true;
+            questionField.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -SPACE).isActive = true;
             
             questionField.sizeToFit();
             
@@ -434,7 +432,7 @@ class CompoundQueryNode : Node {
             let offset = CGFloat(currentIndex - index) * (frame.width * 2);
             
             UIView.animate(withDuration: COMPOUND_ANIMATION_DURATION, delay: 0.0, options: .curveEaseOut, animations: {
-                questionField.frame.origin = CGPoint(x: self.space + offset, y: questionField.frame.origin.y)
+                questionField.frame.origin = CGPoint(x: self.SPACE + offset, y: questionField.frame.origin.y)
             })
             
             currentIndex = currentIndex + 1;
