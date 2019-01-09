@@ -11,6 +11,7 @@ import UIKit
 
 class Node: UIView {
     let ANIMATION_DURATION : Double = 1;
+    let COMPOUND_ANIMATION_DURATION : Double = 0.5;
     func setOffset(vec : CGVector, animate : Bool) {
     }
 }
@@ -252,7 +253,7 @@ class QueryNode : Node {
     }
 }
 
-class CompoundQueryNode : Node, UITableViewDataSource, UITableViewDelegate {
+class CompoundQueryNode : Node {
     var questions = [String]();
     var needed : Int = 0;
     var engine : DecisionEngine;
@@ -260,9 +261,42 @@ class CompoundQueryNode : Node, UITableViewDataSource, UITableViewDelegate {
     var questionsTableView: UITableView!
     
     private let space : CGFloat = 5;
-    private let lineHeight : CGFloat = 50;
+    private let yesNoButtonHeight : CGFloat = 50;
     private let nodeConnectDistance : CGFloat = 20;
     private var defaultFrame : CGRect;
+    
+    private var answered = 0;
+    private var current = 0;
+    
+    var questionFields = [UILabel]();
+    
+    let yesButton : UIButton = {
+        let btn = UIButton(type:.system)
+        btn.setTitle("Yes", for: .normal)
+        btn.setTitleColor(UIColor.black , for: .normal);
+        btn.tintColor = UIColor.white
+        btn.layer.cornerRadius = 5
+        btn.clipsToBounds = true
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        if let titleLabel = btn.titleLabel {
+            titleLabel.font = UIFont.preferredFont(forTextStyle: .body);
+        }
+        return btn
+    }()
+    
+    let noButton : UIButton = {
+        let btn = UIButton(type:.system)
+        btn.setTitle("No", for: .normal)
+        btn.setTitleColor(UIColor.black , for: .normal);
+        btn.tintColor = UIColor.lightGray
+        btn.layer.cornerRadius = 5
+        btn.clipsToBounds = true
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        if let titleLabel = btn.titleLabel {
+            titleLabel.font = UIFont.preferredFont(forTextStyle: .body);
+        }
+        return btn
+    }()
     
     init(questions : [String], needed : Int, engine: DecisionEngine, initialX : CGFloat, initialY : CGFloat, width : CGFloat, height : CGFloat) {
         
@@ -273,56 +307,35 @@ class CompoundQueryNode : Node, UITableViewDataSource, UITableViewDelegate {
         defaultFrame = CGRect(x: initialX, y: initialY, width: width, height: height);
         super.init(frame: defaultFrame);
         
-        questionsTableView = UITableView(frame: defaultFrame);
-        questionsTableView.translatesAutoresizingMaskIntoConstraints = false;
+        addSubview(yesButton);
+        addSubview(noButton);
         
-        questionsTableView.delegate = self
-        questionsTableView.dataSource = self
+        yesButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
+        noButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
         
-        addSubview(questionsTableView);
+        for question in questions {
+            let label = UILabel(frame: frame);
+            label.text = question
+            label.textColor = DukeLookAndFeel.coolGray;
+            label.translatesAutoresizingMaskIntoConstraints = false;
+            label.adjustsFontForContentSizeCategory = true;
+            label.adjustsFontSizeToFitWidth = true;
+            label.numberOfLines = 0;
+            questionFields.append(label)
+            addSubview(label)
+        }
+        
+        self.clipsToBounds = true
         
         setUpColors();
         setUpAutoLayout();
+        
+        answered = 0;
+        current = 0;
     }
     
     required init(coder aDecoder: NSCoder) {
         fatalError("This class does not support NSCoding")
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if (tableView == questionsTableView) {
-            return questions.count;
-        }
-        
-        return 0;
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = UITableViewCell();
-        
-        if (tableView == questionsTableView) {
-            cell.textLabel?.adjustsFontSizeToFitWidth = true
-            cell.textLabel?.minimumScaleFactor = 0.5;
-            cell.textLabel?.allowsDefaultTighteningForTruncation = true
-            cell.textLabel?.numberOfLines = 0
-            cell.textLabel?.text = questions[indexPath.row];
-        }
-        
-        cell.textLabel?.textColor = DukeLookAndFeel.coolGray
-        
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = DukeLookAndFeel.blueSecondaryFaded
-        cell.selectedBackgroundView = backgroundView
-        
-        cell.backgroundColor = UIColor.clear;
-        return cell;
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        if (tableView == questionsTableView) {
-        }
     }
     
     override func setOffset(vec : CGVector, animate: Bool) {
@@ -340,6 +353,29 @@ class CompoundQueryNode : Node, UITableViewDataSource, UITableViewDelegate {
     }
     
     @objc func buttonPressed(_ sender: UIButton?) {
+        if (sender == yesButton) {
+            current = current + 1
+            answered = answered + 1;
+            if (answered >= needed) {
+                engine.AnswerQuestion(value: true);
+                return;
+            }
+        }
+        if (sender == noButton) {
+            current = current + 1
+            
+            //currently have current questions answeresd of questions.count
+            //with answered / needed
+            //if (needed - answered) < questions.count - current, we're done
+            
+            if ((needed - answered) > (questions.count - current)) {
+                engine.AnswerQuestion(value: false);
+                return;
+            }
+        }
+        
+        //animate presentation of next question
+        setActiveQuestionField(index: current);
     }
     
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -350,22 +386,69 @@ class CompoundQueryNode : Node, UITableViewDataSource, UITableViewDelegate {
     
     //layout of view
     func setUpAutoLayout() {
-        questionsTableView.leftAnchor.constraint(equalTo:leftAnchor, constant: space).isActive = true;
-        questionsTableView.rightAnchor.constraint(equalTo:rightAnchor, constant: -space).isActive = true;
-        questionsTableView.topAnchor.constraint(equalTo:topAnchor, constant: space).isActive = true;
-        questionsTableView.bottomAnchor.constraint(equalTo:bottomAnchor, constant: -space).isActive = true;
-
-        questionsTableView.rowHeight = frame.height / CGFloat(questions.count) - 2;
+        yesButton.leftAnchor.constraint(equalTo: leftAnchor, constant: space).isActive = true;
+        yesButton.rightAnchor.constraint(equalTo: centerXAnchor, constant: -space/2).isActive = true;
+        yesButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
+        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -space - nodeConnectDistance).isActive = true;
+        
+        noButton.leftAnchor.constraint(equalTo:yesButton.rightAnchor, constant: space).isActive = true;
+        noButton.rightAnchor.constraint(equalTo:rightAnchor, constant: -space).isActive = true;
+        noButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
+        noButton.bottomAnchor.constraint(equalTo: yesButton.bottomAnchor).isActive = true;
+        
+        var currentIndex = 0;
+        for questionField in questionFields {
+            let offset = CGFloat(currentIndex) * (frame.width * 2);
+            
+            questionField.leftAnchor.constraint(equalTo:leftAnchor, constant: space + offset).isActive = true;
+            questionField.rightAnchor.constraint(equalTo:rightAnchor, constant: -space + offset).isActive = true;
+            questionField.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -space).isActive = true;
+            
+            questionField.sizeToFit();
+            
+            currentIndex = currentIndex + 1;
+        }
+    }
+    
+    func setActiveQuestionField(index : Int) {
+        
+        var currentIndex = 0;
+        for questionField in questionFields {
+            let offset = CGFloat(currentIndex - index) * (frame.width * 2);
+            
+            UIView.animate(withDuration: COMPOUND_ANIMATION_DURATION, delay: 0.0, options: .curveEaseOut, animations: {
+                questionField.frame.origin = CGPoint(x: self.space + offset, y: questionField.frame.origin.y)
+            })
+            
+            currentIndex = currentIndex + 1;
+        }
     }
     
     func setUpColors() {
         self.layer.borderWidth = 5;
         self.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
         
+        yesButton.setTitleColor(DukeLookAndFeel.coolGray, for: .normal);
+        noButton.setTitleColor(DukeLookAndFeel.coolGray, for: .normal);
+        
+        yesButton.setTitleShadowColor(DukeLookAndFeel.black, for: .normal);
+        noButton.setTitleShadowColor(DukeLookAndFeel.black, for: .normal);
+        
+        yesButton.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
+        noButton.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
+        
+        yesButton.layer.borderWidth = 1;
+        noButton.layer.borderWidth = 1;
+        
         backgroundColor = DukeLookAndFeel.black
-        questionsTableView.backgroundColor = DukeLookAndFeel.black
     }
     
     func setEditable(editable : Bool) {
+        noButton.isEnabled = editable;
+        yesButton.isEnabled = editable;
+        
+        answered = 0;
+        current = 0;
+        setActiveQuestionField(index: 0)
     }
 }

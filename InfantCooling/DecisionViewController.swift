@@ -30,8 +30,8 @@ class DecisionViewController: UIViewController {
     private var firstDraw = false;
     
     
-    let nodeWidth : CGFloat = 0.8;
-    let nodeHeight: CGFloat = 0.4;
+    let nodeWidth : CGFloat = 0.66;
+    let nodeHeight: CGFloat = 0.33;
     
     var questions = [""];
     var answers = [""];
@@ -172,6 +172,9 @@ class DecisionViewController: UIViewController {
             node.setOffset(vec: offset, animate: firstDraw)
             if let question = decisionEngineNode as? DecisionEngine.Question, let queryNode = node as? QueryNode {
                 queryNode.setEditable(editable: question.question == queryNode.question)
+            }
+            if let question = decisionEngineNode as? DecisionEngine.CompoundQuestion, let queryNode = node as? CompoundQueryNode {
+                queryNode.setEditable(editable: question.questions == queryNode.questions)
             }
         }
         for line in lineViews {
