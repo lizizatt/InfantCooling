@@ -122,7 +122,7 @@ let jsonStringStepB =
 ],
 "compoundQuestions": [
 {
-"id": "neuroexam",
+"id": "Neurological Exam",
 "needed": 3,
 "questions":
 ["Level of Consciousness:  Patient lethargic or in stupor/coma?",
@@ -148,10 +148,10 @@ let jsonStringStepB =
 {
 "question": "seizures",
 "pass": "Proceed",
-"fail": "neuroexam"
+"fail": "Neurological Exam"
 },
 {
-"question": "neuroexam",
+"question": "Neurological Exam",
 "pass": "Proceed",
 "fail": "DoNotCool"
 }
@@ -162,14 +162,52 @@ let jsonStringStepB =
 
 class MainViewController: UIViewController, UITableViewDataSource, UITableViewDelegate  {
     
+    static let LABEL_HEIGHT : CGFloat = 0.1
+    static let LIST_HEIGHT : CGFloat = 0.5
+    static let DISCLAIMERS_HEIGHT : CGFloat = 0.2
+    
     var treesTableView: UITableView!
     var treesTableViewLabel: UILabel!
     var disclaimersTableView: UITableView!
+    var lineView: LineView!
     
     private let space : CGFloat = 5;
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        treesTableViewLabel = UILabel(frame: view.frame)
+        treesTableView = UITableView(frame: view.frame)
+        disclaimersTableView = UITableView(frame: view.frame)
+        
+        view.addSubview(treesTableViewLabel)
+        view.addSubview(treesTableView)
+        view.addSubview(disclaimersTableView)
+        
+        treesTableView.delegate = self;
+        treesTableView.dataSource = self;
+        
+        disclaimersTableView.delegate = self;
+        disclaimersTableView.dataSource = self;
+        
+        treesTableView.separatorColor = DukeLookAndFeel.blueSecondaryFaded
+        treesTableView.isScrollEnabled = false
+        
+        disclaimersTableView.separatorStyle = .none
+        disclaimersTableView.isScrollEnabled = false
+        
+        treesTableViewLabel.textColor = DukeLookAndFeel.coolGray
+        treesTableViewLabel.text = "Cooling Criteria for Inborn and Outborn Infants"
+        treesTableViewLabel.textAlignment = NSTextAlignment.center
+        treesTableViewLabel.adjustsFontSizeToFitWidth = true
+        treesTableViewLabel.adjustsFontForContentSizeCategory = true
+        
+        setUpColors()
+        setUpAutoLayout()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -187,15 +225,18 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if (tableView == treesTableView) {
             switch indexPath.row {
             case 0:
-                cell.textLabel?.text = "Step A"
+                cell.textLabel?.text = "Step A: Evaluation"
             case 1:
-                cell.textLabel?.text = "Step B"
+                cell.textLabel?.text = "Step B: Neurological Exam"
             default:
                 break
             }
         }
         
         cell.textLabel?.textColor = DukeLookAndFeel.coolGray
+        cell.textLabel?.textAlignment = NSTextAlignment.justified
+        cell.textLabel?.adjustsFontSizeToFitWidth = true
+        cell.textLabel?.adjustsFontForContentSizeCategory = true
         
         let backgroundView = UIView()
         backgroundView.backgroundColor = DukeLookAndFeel.blueSecondaryFaded
@@ -220,38 +261,11 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.cellForRow(at: indexPath)?.setSelected(false, animated: false)
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        treesTableViewLabel = UILabel(frame: view.frame)
-        treesTableView = UITableView(frame: view.frame)
-        disclaimersTableView = UITableView(frame: view.frame)
-        
-        view.addSubview(treesTableViewLabel)
-        view.addSubview(treesTableView)
-        view.addSubview(disclaimersTableView)
-        
-        treesTableView.delegate = self;
-        treesTableView.dataSource = self;
-
-        disclaimersTableView.delegate = self;
-        disclaimersTableView.dataSource = self;
-        
-        view.backgroundColor = DukeLookAndFeel.black;
-        treesTableView.backgroundColor = UIColor.clear;
-        disclaimersTableView.backgroundColor = UIColor.clear;
-        
-        treesTableViewLabel.textColor = DukeLookAndFeel.coolGray
-        treesTableViewLabel.text = "Infant Cooling"
-        
-        setUpAutoLayout()
-    }
-    
     func setUpAutoLayout() {
         
-        let labelHeight = 0.1 * view.frame.height
-        let treesListHeight = 0.75 * view.frame.height
-        let disclaimersListHeight = 0.15 * view.frame.height
+        let labelHeight = MainViewController.LABEL_HEIGHT * view.frame.height
+        let treesListHeight = MainViewController.LIST_HEIGHT * view.frame.height
+        let disclaimersListHeight = MainViewController.DISCLAIMERS_HEIGHT * view.frame.height
         
         treesTableViewLabel.translatesAutoresizingMaskIntoConstraints = false
         treesTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -265,13 +279,18 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         treesTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: space).isActive = true;
         treesTableView.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor, constant: -space).isActive = true;
         treesTableView.heightAnchor.constraint(equalToConstant: treesListHeight).isActive = true;
-        treesTableView.topAnchor.constraint(equalTo: treesTableViewLabel.bottomAnchor, constant: space).isActive = true;
+        treesTableView.topAnchor.constraint(equalTo: treesTableViewLabel.bottomAnchor).isActive = true;
         
         disclaimersTableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: space).isActive = true;
         disclaimersTableView.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor, constant: -space).isActive = true;
         disclaimersTableView.heightAnchor.constraint(equalToConstant: disclaimersListHeight).isActive = true;
         disclaimersTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -space).isActive = true;
-        
+    }
+    
+    func setUpColors() {
+        view.backgroundColor = DukeLookAndFeel.black;
+        treesTableView.backgroundColor = UIColor.clear;
+        disclaimersTableView.backgroundColor = UIColor.clear;
     }
     
 }

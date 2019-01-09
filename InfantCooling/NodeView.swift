@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 
 class Node: UIView {
+    static let CORNER_RADIUS : CGFloat = 5;
     let ANIMATION_DURATION : Double = 1;
     let COMPOUND_ANIMATION_DURATION : Double = 0.5;
     let SPACE : CGFloat = 10;
@@ -24,15 +25,13 @@ class LeafNode : Node {
     var result = "";
     var engine : DecisionEngine;
     
-    private let nodeConnectDistance : CGFloat = 20;
-    
     private var defaultFrame : CGRect;
     
     let resultField : UILabel = {
         let txt = UILabel()
         txt.text = ""
         txt.tintColor = .white
-        txt.layer.cornerRadius = 5
+        txt.layer.cornerRadius = Node.CORNER_RADIUS
         txt.clipsToBounds = true
         txt.textAlignment = NSTextAlignment.center
         txt.translatesAutoresizingMaskIntoConstraints = false
@@ -55,6 +54,7 @@ class LeafNode : Node {
         
         self.layer.borderWidth = 5;
         self.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
+        self.layer.cornerRadius = Node.CORNER_RADIUS;
         
         addSubview(resultField);
         
@@ -79,12 +79,6 @@ class LeafNode : Node {
             self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
         })
         
-    }
-    
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        var defaultSizeThatFits = super.sizeThatFits(_: size);
-        defaultSizeThatFits.height += nodeConnectDistance * 2;
-        return defaultSizeThatFits;
     }
     
     //layout of view
@@ -117,14 +111,13 @@ class QueryNode : Node {
     var engine : DecisionEngine;
     
     private let yesNoButtonHeight : CGFloat = 50;
-    private let nodeConnectDistance : CGFloat = 20;
     private var defaultFrame : CGRect;
     
     let questionField : UILabel = {
         let txt = UILabel()
         txt.text = ""
         txt.tintColor = .white
-        txt.layer.cornerRadius = 5
+        txt.layer.cornerRadius = Node.CORNER_RADIUS
         txt.clipsToBounds = true
         txt.textAlignment = NSTextAlignment.center
         txt.translatesAutoresizingMaskIntoConstraints = false
@@ -140,7 +133,7 @@ class QueryNode : Node {
         btn.setTitle("Yes", for: .normal)
         btn.setTitleColor(UIColor.black , for: .normal);
         btn.tintColor = UIColor.white
-        btn.layer.cornerRadius = 5
+        btn.layer.cornerRadius = Node.CORNER_RADIUS
         btn.clipsToBounds = true
         btn.translatesAutoresizingMaskIntoConstraints = false
         if let titleLabel = btn.titleLabel {
@@ -154,7 +147,7 @@ class QueryNode : Node {
         btn.setTitle("No", for: .normal)
         btn.setTitleColor(UIColor.black , for: .normal);
         btn.tintColor = UIColor.lightGray
-        btn.layer.cornerRadius = 5
+        btn.layer.cornerRadius = Node.CORNER_RADIUS
         btn.clipsToBounds = true
         btn.translatesAutoresizingMaskIntoConstraints = false
         if let titleLabel = btn.titleLabel {
@@ -175,6 +168,7 @@ class QueryNode : Node {
         
         self.layer.borderWidth = 5;
         self.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
+        self.layer.cornerRadius = Node.CORNER_RADIUS
         
         addSubview(yesButton);
         addSubview(noButton);
@@ -214,18 +208,12 @@ class QueryNode : Node {
         }
     }
     
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        var defaultSizeThatFits = super.sizeThatFits(_: size);
-        defaultSizeThatFits.height += nodeConnectDistance * 2;
-        return defaultSizeThatFits;
-    }
-    
     //layout of view
     func setUpAutoLayout() {
         yesButton.leftAnchor.constraint(equalTo: leftAnchor, constant: SPACE).isActive = true;
         yesButton.rightAnchor.constraint(equalTo: centerXAnchor, constant: -SPACE/2).isActive = true;
         yesButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
-        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -SPACE - nodeConnectDistance).isActive = true;
+        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -SPACE).isActive = true;
         
         noButton.leftAnchor.constraint(equalTo:yesButton.rightAnchor, constant: SPACE).isActive = true;
         noButton.rightAnchor.constraint(equalTo:rightAnchor, constant: -SPACE).isActive = true;
@@ -234,7 +222,7 @@ class QueryNode : Node {
         
         questionField.leftAnchor.constraint(equalTo:leftAnchor, constant: SPACE).isActive = true;
         questionField.rightAnchor.constraint(equalTo:rightAnchor, constant: -SPACE).isActive = true;
-        questionField.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -SPACE).isActive = true;
+        questionField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true;
         
         questionField.sizeToFit();
     }
@@ -277,7 +265,6 @@ class CompoundQueryNode : Node {
     var questionsTableView: UITableView!
     
     private let yesNoButtonHeight : CGFloat = 50;
-    private let nodeConnectDistance : CGFloat = 20;
     private var defaultFrame : CGRect;
     
     private var answered = 0;
@@ -285,12 +272,31 @@ class CompoundQueryNode : Node {
     
     var questionFields = [UILabel]();
     
+    let labelField : UILabel = {
+        let txt = UILabel()
+        
+        txt.textColor = DukeLookAndFeel.coolGray;
+        txt.text = ""
+        txt.tintColor = .white
+        txt.layer.cornerRadius = Node.CORNER_RADIUS
+        txt.clipsToBounds = true
+        txt.numberOfLines = 1;
+        txt.textAlignment = NSTextAlignment.center
+        txt.translatesAutoresizingMaskIntoConstraints = false
+        txt.font = UIFont.preferredFont(forTextStyle: .body)
+        txt.translatesAutoresizingMaskIntoConstraints = false;
+        txt.adjustsFontForContentSizeCategory = true;
+        txt.adjustsFontSizeToFitWidth = true;
+        txt.lineBreakMode = NSLineBreakMode.byWordWrapping
+        return txt
+    }()
+    
     let yesButton : UIButton = {
         let btn = UIButton(type:.system)
         btn.setTitle("Yes", for: .normal)
         btn.setTitleColor(UIColor.black , for: .normal);
         btn.tintColor = UIColor.white
-        btn.layer.cornerRadius = 5
+        btn.layer.cornerRadius = Node.CORNER_RADIUS
         btn.clipsToBounds = true
         btn.translatesAutoresizingMaskIntoConstraints = false
         if let titleLabel = btn.titleLabel {
@@ -304,7 +310,7 @@ class CompoundQueryNode : Node {
         btn.setTitle("No", for: .normal)
         btn.setTitleColor(UIColor.black , for: .normal);
         btn.tintColor = UIColor.lightGray
-        btn.layer.cornerRadius = 5
+        btn.layer.cornerRadius = Node.CORNER_RADIUS
         btn.clipsToBounds = true
         btn.translatesAutoresizingMaskIntoConstraints = false
         if let titleLabel = btn.titleLabel {
@@ -313,7 +319,7 @@ class CompoundQueryNode : Node {
         return btn
     }()
     
-    init(questions : [String], needed : Int, engine: DecisionEngine, initialX : CGFloat, initialY : CGFloat, width : CGFloat, height : CGFloat) {
+    init(label : String, questions : [String], needed : Int, engine: DecisionEngine, initialX : CGFloat, initialY : CGFloat, width : CGFloat, height : CGFloat) {
         
         self.engine = engine;
         self.questions = questions;
@@ -324,6 +330,9 @@ class CompoundQueryNode : Node {
         
         addSubview(yesButton);
         addSubview(noButton);
+        addSubview(labelField);
+        
+        labelField.text = label;
         
         yesButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
         noButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
@@ -393,18 +402,17 @@ class CompoundQueryNode : Node {
         setActiveQuestionField(index: current);
     }
     
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        var defaultSizeThatFits = super.sizeThatFits(_: size);
-        defaultSizeThatFits.height += nodeConnectDistance * 2;
-        return defaultSizeThatFits;
-    }
-    
     //layout of view
     func setUpAutoLayout() {
+        labelField.leftAnchor.constraint(equalTo: leftAnchor, constant: SPACE).isActive = true;
+        labelField.rightAnchor.constraint(equalTo: rightAnchor, constant: -SPACE).isActive = true;
+        labelField.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
+        labelField.topAnchor.constraint(equalTo: topAnchor, constant: SPACE).isActive = true;
+        
         yesButton.leftAnchor.constraint(equalTo: leftAnchor, constant: SPACE).isActive = true;
         yesButton.rightAnchor.constraint(equalTo: centerXAnchor, constant: -SPACE/2).isActive = true;
         yesButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
-        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -SPACE - nodeConnectDistance).isActive = true;
+        yesButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -SPACE).isActive = true;
         
         noButton.leftAnchor.constraint(equalTo:yesButton.rightAnchor, constant: SPACE).isActive = true;
         noButton.rightAnchor.constraint(equalTo:rightAnchor, constant: -SPACE).isActive = true;
@@ -417,9 +425,7 @@ class CompoundQueryNode : Node {
             
             questionField.leftAnchor.constraint(equalTo:leftAnchor, constant: SPACE + offset).isActive = true;
             questionField.rightAnchor.constraint(equalTo:rightAnchor, constant: -SPACE + offset).isActive = true;
-            questionField.bottomAnchor.constraint(equalTo: yesButton.topAnchor, constant: -SPACE).isActive = true;
-            
-            questionField.sizeToFit();
+            questionField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true;
             
             currentIndex = currentIndex + 1;
         }
@@ -442,6 +448,7 @@ class CompoundQueryNode : Node {
     func setUpColors() {
         self.layer.borderWidth = 5;
         self.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
+        self.layer.cornerRadius = Node.CORNER_RADIUS
         
         yesButton.setTitleColor(DukeLookAndFeel.coolGray, for: .normal);
         noButton.setTitleColor(DukeLookAndFeel.coolGray, for: .normal);

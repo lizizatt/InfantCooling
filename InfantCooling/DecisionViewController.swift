@@ -121,22 +121,28 @@ class DecisionViewController: UIViewController {
             let dX = w * 1.5
             for node in nodes[level]! {
                 if let question = node as? DecisionEngine.Question {
-                    nodeViews.append(QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
-                    view.addSubview(nodeViews[nodeViews.count - 1])
+                    let toAdd = QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h)
+                    toAdd.sizeToFit()
+                    nodeViews.append(toAdd)
+                    view.addSubview(toAdd)
                     nodesPositionDictionary[question] = CGVector(dx: x, dy: y)
-                    nodesAccessDictionary[question] = nodeViews[nodeViews.count - 1]
+                    nodesAccessDictionary[question] = toAdd
                 }
                 if let compoundQuestion = node as? DecisionEngine.CompoundQuestion {
-                    nodeViews.append(CompoundQueryNode(questions: compoundQuestion.questions, needed: compoundQuestion.needed, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
-                    view.addSubview(nodeViews[nodeViews.count - 1])
+                    let toAdd = CompoundQueryNode(label: compoundQuestion.id, questions: compoundQuestion.questions, needed: compoundQuestion.needed, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h)
+                    toAdd.sizeToFit()
+                    nodeViews.append(toAdd)
+                    view.addSubview(toAdd)
                     nodesPositionDictionary[compoundQuestion] = CGVector(dx: x, dy: y)
-                    nodesAccessDictionary[compoundQuestion] = nodeViews[nodeViews.count - 1]
+                    nodesAccessDictionary[compoundQuestion] = toAdd
                 }
                 if let leaf = node as? DecisionEngine.Leaf {
-                    nodeViews.append(LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
-                    view.addSubview(nodeViews[nodeViews.count - 1])
+                    let toAdd = LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h)
+                    toAdd.sizeToFit()
+                    nodeViews.append(toAdd)
+                    view.addSubview(toAdd)
                     nodesPositionDictionary[leaf] = CGVector(dx: x, dy: y)
-                    nodesAccessDictionary[leaf] = nodeViews[nodeViews.count - 1]
+                    nodesAccessDictionary[leaf] = toAdd
                 }
                 x += dX
             }
