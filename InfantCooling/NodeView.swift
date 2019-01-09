@@ -196,10 +196,10 @@ class QueryNode : Node {
     
     @objc func buttonPressed(_ sender: UIButton?) {
         if (sender == yesButton) {
-            engine.AnswerQuestion(question: question, value: true);
+            engine.AnswerQuestion(value: true);
         }
         if (sender == noButton) {
-            engine.AnswerQuestion(question: question, value: false);
+            engine.AnswerQuestion(value: false);
         }
     }
     
@@ -249,5 +249,123 @@ class QueryNode : Node {
     func setEditable(editable : Bool) {
         noButton.isEnabled = editable;
         yesButton.isEnabled = editable;
+    }
+}
+
+class CompoundQueryNode : Node, UITableViewDataSource, UITableViewDelegate {
+    var questions = [String]();
+    var needed : Int = 0;
+    var engine : DecisionEngine;
+    
+    var questionsTableView: UITableView!
+    
+    private let space : CGFloat = 5;
+    private let lineHeight : CGFloat = 50;
+    private let nodeConnectDistance : CGFloat = 20;
+    private var defaultFrame : CGRect;
+    
+    init(questions : [String], needed : Int, engine: DecisionEngine, initialX : CGFloat, initialY : CGFloat, width : CGFloat, height : CGFloat) {
+        
+        self.engine = engine;
+        self.questions = questions;
+        self.needed = needed;
+        
+        defaultFrame = CGRect(x: initialX, y: initialY, width: width, height: height);
+        super.init(frame: defaultFrame);
+        
+        questionsTableView = UITableView(frame: defaultFrame);
+        questionsTableView.translatesAutoresizingMaskIntoConstraints = false;
+        
+        questionsTableView.delegate = self
+        questionsTableView.dataSource = self
+        
+        addSubview(questionsTableView);
+        
+        setUpColors();
+        setUpAutoLayout();
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        fatalError("This class does not support NSCoding")
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if (tableView == questionsTableView) {
+            return questions.count;
+        }
+        
+        return 0;
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = UITableViewCell();
+        
+        if (tableView == questionsTableView) {
+            cell.textLabel?.adjustsFontSizeToFitWidth = true
+            cell.textLabel?.minimumScaleFactor = 0.5;
+            cell.textLabel?.allowsDefaultTighteningForTruncation = true
+            cell.textLabel?.numberOfLines = 0
+            cell.textLabel?.text = questions[indexPath.row];
+        }
+        
+        cell.textLabel?.textColor = DukeLookAndFeel.coolGray
+        
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = DukeLookAndFeel.blueSecondaryFaded
+        cell.selectedBackgroundView = backgroundView
+        
+        cell.backgroundColor = UIColor.clear;
+        return cell;
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if (tableView == questionsTableView) {
+        }
+    }
+    
+    override func setOffset(vec : CGVector, animate: Bool) {
+        let x = vec.dx - frame.width / 2;
+        let y = vec.dy - frame.height / 2;
+        
+        var duration = ANIMATION_DURATION;
+        if (!animate) {
+            duration = 0;
+        }
+        
+        UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseOut, animations: {
+            self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
+        })
+    }
+    
+    @objc func buttonPressed(_ sender: UIButton?) {
+    }
+    
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        var defaultSizeThatFits = super.sizeThatFits(_: size);
+        defaultSizeThatFits.height += nodeConnectDistance * 2;
+        return defaultSizeThatFits;
+    }
+    
+    //layout of view
+    func setUpAutoLayout() {
+        questionsTableView.leftAnchor.constraint(equalTo:leftAnchor, constant: space).isActive = true;
+        questionsTableView.rightAnchor.constraint(equalTo:rightAnchor, constant: -space).isActive = true;
+        questionsTableView.topAnchor.constraint(equalTo:topAnchor, constant: space).isActive = true;
+        questionsTableView.bottomAnchor.constraint(equalTo:bottomAnchor, constant: -space).isActive = true;
+
+        questionsTableView.rowHeight = frame.height / CGFloat(questions.count) - 2;
+    }
+    
+    func setUpColors() {
+        self.layer.borderWidth = 5;
+        self.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
+        
+        backgroundColor = DukeLookAndFeel.black
+        questionsTableView.backgroundColor = DukeLookAndFeel.black
+    }
+    
+    func setEditable(editable : Bool) {
     }
 }

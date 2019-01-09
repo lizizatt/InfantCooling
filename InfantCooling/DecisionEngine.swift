@@ -45,11 +45,13 @@ class DecisionEngine {
 
     class Tree: Decodable {
         let questions: [Question]
+        let compoundQuestions: [CompoundQuestion]?
         let leaves: [Leaf]
         let branches: [Branch]
         
-        init(questions: [Question], leaves: [Leaf], branches: [Branch]) {
+        init(questions: [Question], compoundQuestions: [CompoundQuestion], leaves: [Leaf], branches: [Branch]) {
             self.questions = questions
+            self.compoundQuestions = compoundQuestions
             self.leaves = leaves
             self.branches = branches
         }
@@ -109,6 +111,11 @@ class DecisionEngine {
             for question in questions {
                 toRet.append(question)
             }
+            if let compoundQuestions = compoundQuestions {
+                for compoundQuestion in compoundQuestions {
+                    toRet.append(compoundQuestion)
+                }
+            }
             for leaf in leaves {
                 toRet.append(leaf)
             }
@@ -125,10 +132,17 @@ class DecisionEngine {
             return max;
         }
         
-        func getQuestion(withId : String) -> Question? {
+        func getQuestion(withId : String) -> Node? {
             for question in questions {
                 if question.getID().lowercased() == withId.lowercased() {
                     return question;
+                }
+            }
+            if let compoundQuestions = compoundQuestions {
+                for question in compoundQuestions {
+                    if question.getID().lowercased() == withId.lowercased() {
+                        return question;
+                    }
                 }
             }
             return nil;
@@ -160,6 +174,14 @@ class DecisionEngine {
             return id;
         }
     }
+    class CompoundQuestion: Node, Decodable {
+        let id : String;
+        let needed : Int;
+        let questions : [String];
+        override func getID() -> String {
+            return id;
+        }
+    }
     class Leaf: Node, Decodable {
         let id : String;
         let result : String;
@@ -174,113 +196,10 @@ class DecisionEngine {
         let fail: String
     }
     
-    
-    let jsonString =
-    """
-    {
-    "questions": [
-        {
-            "id": "Gestation",
-            "question": "Gestation > 35 Weeks?"
-        },
-        {
-            "id": "q2",
-            "question": "Acute perinatal event?"
-        },
-        {
-            "id": "q3",
-            "question": "Apgar <= 5 at 10 minutes"
-        },
-        {
-            "id": "q4",
-            "question": "pH =< 7.0 at < 1 hour"
-        },
-        {
-            "id": "q5",
-            "question": "Base deficit >= 16 mEq/L at < 1 hour"
-        },
-        {
-            "id": "q6",
-            "question": "Needed ventilation at least 10 minutes since birth?"
-        },
-        {
-            "id": "BloodGas",
-            "question": "Blood gas available?"
-        },
-        {
-            "id": "phRange",
-            "question": "7.0 < pH < 7.15"
-        },
-        {
-            "id": "BaseDeficitRange",
-            "question": "10 < base deficit < 15.9mEq/L"
-        }
-    ],
-    "leaves": [
-        {
-            "id": "DoNotCool",
-            "result": "Do not cool infant"
-        },
-        {
-            "id": "Proceed",
-            "result": "Proceed to neurological evaluation"
-        }
-    ],
-    "branches": [
-        {
-            "question": "Gestation",
-            "pass": "BloodGas",
-            "fail": "doNotCool"
-        },
-        {
-            "question": "BloodGas",
-            "pass": "phRange",
-            "fail": "q2"
-        },
-        {
-            "question": "phRange",
-            "pass": "BaseDeficitRange",
-            "fail": "q4"
-        },
-        {
-            "question": "BaseDeficitRange",
-            "pass": "q2",
-            "fail": "q4"
-        },
-        {
-            "question": "q2",
-            "pass": "q3",
-            "fail": "DoNotCool"
-        },
-        {
-            "question": "q3",
-            "pass": "Proceed",
-            "fail":"q6"
-        },
-        {
-            "question": "q6",
-            "pass": "Proceed",
-            "fail": "DoNotCool"
-        },
-        {
-            "question": "q4",
-            "pass": "Proceed",
-            "fail": "q5"
-        },
-        {
-            "question": "q5",
-            "pass": "Proceed",
-            "fail": "DoNotCool"
-        }
-    ]
-}
-"""
-    
-    init(controller: DecisionEngineController) {
+    init(controller: DecisionEngineController, jsonString : String) {
         self.controller = controller;
         
         //load json tree descriptor
-        
         let jsonData = jsonString.data(using: .utf8)!
         let decoder = JSONDecoder()
         tree = try! decoder.decode(Tree.self, from: jsonData)
@@ -304,7 +223,7 @@ class DecisionEngine {
     }
     
     //interface for controller providing the answer to the most recently requested question
-    func AnswerQuestion(question : String, value : Bool) {
+    func AnswerQuestion(value : Bool) {
         
         if let tree = tree {
             let toFind = value ? currentBranch?.pass : currentBranch?.fail;
@@ -335,6 +254,14 @@ class DecisionEngine {
                 if (question.id == currentBranch?.question) {
                     controller.FocusOnNode(question);
                     return;
+                }
+            }
+            if let compoundQuestions = tree.compoundQuestions {
+                for compoundQuestion in compoundQuestions {
+                    if (compoundQuestion.id == currentBranch?.question) {
+                        controller.FocusOnNode(compoundQuestion);
+                        return;
+                    }
                 }
             }
         }

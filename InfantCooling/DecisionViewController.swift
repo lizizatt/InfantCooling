@@ -15,12 +15,13 @@ func +(left: CGVector, right: CGVector) -> CGVector {
 }
 
 class DecisionViewController: UIViewController {
+    
     static let ANIMATION_DURATION : Double = 1;
 
     private var decisionEngine : DecisionEngine?;
     
     private let space : CGFloat = 5;
-    private let yesNoButtonHeight : CGFloat = 100;
+    private let yesNoButtonHeight : CGFloat = 50;
     
     private var nodesPositionDictionary = [DecisionEngine.Node: CGVector]()
     private var nodeViews = [Node]()
@@ -29,11 +30,12 @@ class DecisionViewController: UIViewController {
     private var firstDraw = false;
     
     
-    let nodeWidth : CGFloat = 0.66;
-    let nodeHeight: CGFloat = 0.25;
+    let nodeWidth : CGFloat = 0.8;
+    let nodeHeight: CGFloat = 0.4;
     
     var questions = [""];
     var answers = [""];
+    var jsonString = "";
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -52,18 +54,38 @@ class DecisionViewController: UIViewController {
         return btn
     }()
     
+    let exitButton : UIButton = {
+        let btn = UIButton(type:.system)
+        btn.setTitle("Exit", for: .normal)
+        btn.tintColor = UIColor.lightGray
+        btn.layer.cornerRadius = 5
+        btn.clipsToBounds = true
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        if let titleLabel = btn.titleLabel {
+            titleLabel.font = UIFont.preferredFont(forTextStyle: .body);
+        }
+        return btn
+    }()
+    
     var nv : QueryNode?;
+    
+    convenience init (jsonString : String) {
+        self.init()
+        self.jsonString = jsonString;
+    }
     
     //init
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let dc = DecisionEngineController(SetUpTree: SetUpTree, FocusOnNode: FocusOnNode);
-        decisionEngine = DecisionEngine(controller: dc);
+        decisionEngine = DecisionEngine(controller: dc, jsonString: jsonString);
         
         view.addSubview(resetButton);
+        view.addSubview(exitButton)
         
         resetButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
+        exitButton.addTarget(self, action: #selector(buttonPressed(_:)), for: .touchUpInside)
         
         setUpAutoLayout();
         setUpColors();
@@ -100,6 +122,11 @@ class DecisionViewController: UIViewController {
                     view.addSubview(nodeViews[nodeViews.count - 1])
                     nodesPositionDictionary[question] = CGVector(dx: x, dy: y)
                 }
+                if let compoundQuestion = node as? DecisionEngine.CompoundQuestion {
+                    nodeViews.append(CompoundQueryNode(questions: compoundQuestion.questions, needed: compoundQuestion.needed, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
+                    view.addSubview(nodeViews[nodeViews.count - 1])
+                    nodesPositionDictionary[compoundQuestion] = CGVector(dx: x, dy: y)
+                }
                 if let leaf = node as? DecisionEngine.Leaf {
                     nodeViews.append(LeafNode(result: leaf.result, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h))
                     view.addSubview(nodeViews[nodeViews.count - 1])
@@ -129,6 +156,7 @@ class DecisionViewController: UIViewController {
             view.bringSubviewToFront(node)
         }
         view.bringSubviewToFront(resetButton)
+        view.bringSubviewToFront(exitButton)
     }
     
     //DecisionEngine respondin to a question being answered with the next node
@@ -158,6 +186,9 @@ class DecisionViewController: UIViewController {
         if (sender == resetButton) {
             decisionEngine!.ClearAndStart();
         }
+        if (sender == exitButton) {
+            dismiss(animated: true)
+        }
     }
     
     //layout of view
@@ -166,6 +197,11 @@ class DecisionViewController: UIViewController {
         resetButton.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor, constant: -space).isActive = true;
         resetButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
         resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -space).isActive = true;
+        
+        exitButton.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: space).isActive = true;
+        exitButton.rightAnchor.constraint(equalTo:view.safeAreaLayoutGuide.rightAnchor, constant: -space).isActive = true;
+        exitButton.heightAnchor.constraint(equalToConstant: yesNoButtonHeight).isActive = true;
+        exitButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: space).isActive = true;
     }
     
     func setUpColors() {
@@ -176,5 +212,11 @@ class DecisionViewController: UIViewController {
         resetButton.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
         resetButton.layer.borderWidth = 1;
         resetButton.backgroundColor = DukeLookAndFeel.black;
+        
+        exitButton.setTitleColor(DukeLookAndFeel.coolGray, for: .normal);
+        exitButton.setTitleShadowColor(DukeLookAndFeel.black, for: .normal);
+        exitButton.layer.borderColor = DukeLookAndFeel.coolGray.cgColor;
+        exitButton.layer.borderWidth = 1;
+        exitButton.backgroundColor = DukeLookAndFeel.black;
     }
 }
