@@ -16,7 +16,11 @@ func +(left: CGVector, right: CGVector) -> CGVector {
 
 class DecisionViewController: UIViewController {
     
-    static let ANIMATION_DURATION : Double = 1;
+    let ANIMATION_DURATION_MIN : Double = 0.3;
+    let ANIMATION_DURATION_MAX : Double = 0.6;
+    let ANIMATION_DURATION_BREAKPOINT : Double = 5;
+    let ROW_HEIGHT_MULTIPLIER : CGFloat = 1.5;
+    let COLUMN_HEIGHT_MULTIPLIER : CGFloat = 1.5;
 
     private var decisionEngine : DecisionEngine?;
     
@@ -29,6 +33,8 @@ class DecisionViewController: UIViewController {
     private var lineViews = [LineView]()
     
     private var firstDraw = false;
+    
+    private var priorOffset = CGVector()
     
     
     let nodeWidth : CGFloat = 0.66;
@@ -115,10 +121,10 @@ class DecisionViewController: UIViewController {
         for level in nodes.keys {
             let numInLevel : CGFloat = CGFloat(nodes[level]!.count);
             
-            let y : CGFloat = CGFloat(level) * h * 1.5
+            let y : CGFloat = CGFloat(level) * h * ROW_HEIGHT_MULTIPLIER
             
             var x = numInLevel / -2.0 * w
-            let dX = w * 1.5
+            let dX = w * COLUMN_HEIGHT_MULTIPLIER
             for node in nodes[level]! {
                 if let question = node as? DecisionEngine.Question {
                     let toAdd = QueryNode(question: question.question, engine: decisionEngine!, initialX: x, initialY: y, width: w, height: h)
@@ -179,16 +185,29 @@ class DecisionViewController: UIViewController {
         let pos = nodesPositionDictionary[decisionEngineNode];
         let offset = CGVector(dx: -pos!.dx + view.frame.width / 2, dy: -pos!.dy + view.frame.height / 2)
         
+        
+        //figure out desired length of animation based on distance
+        var duration : Double = 0;
+        if (firstDraw) {
+            let distance : Double = Double(sqrt(pow(priorOffset.dx - offset.dx, 2) + pow(priorOffset.dy - offset.dy, 2)))
+            let rowHeight : Double = Double(nodeHeight * self.view.frame.height * ROW_HEIGHT_MULTIPLIER)
+            let distanceInRows : Double = distance / rowHeight
+            
+            duration = distanceInRows / ANIMATION_DURATION_BREAKPOINT * (ANIMATION_DURATION_MAX - ANIMATION_DURATION_MIN) + ANIMATION_DURATION_MIN
+            duration = max(min(ANIMATION_DURATION_MAX, duration), ANIMATION_DURATION_MIN)
+        }
+        
         //adjust positions of everything in scene
         for node in nodeViews {
-            node.setOffset(vec: offset, animate: firstDraw)
+            node.setOffset(vec: offset, duration: duration)
             node.setFocused(focused: nodesAccessDictionary[decisionEngineNode] == node)
         }
         for line in lineViews {
-            line.setOffset(vec: offset, animate: firstDraw)
+            line.setOffset(vec: offset, duration: duration)
         }
         
         firstDraw = true;
+        priorOffset = offset
     }
     
     //button callback

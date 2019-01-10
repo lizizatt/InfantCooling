@@ -11,13 +11,11 @@ import UIKit
 
 class Node: UIView {
     static let CORNER_RADIUS : CGFloat = 5;
-    let ANIMATION_DURATION : Double = 1;
-    let COMPOUND_ANIMATION_DURATION : Double = 0.5;
+    let COMPOUND_ANIMATION_DURATION : Double = 0.3;
     let SPACE : CGFloat = 10;
-    func setOffset(vec : CGVector, animate : Bool) {
+    func setOffset(vec : CGVector, duration : Double) {
     }
     func setFocused(focused : Bool) {
-        
     }
 }
 
@@ -66,15 +64,11 @@ class LeafNode : Node {
         fatalError("This class does not support NSCoding")
     }
     
-    override func setOffset(vec : CGVector, animate : Bool) {
+    override func setOffset(vec : CGVector, duration : Double) {
         
         let x = vec.dx - frame.width / 2;
         let y = vec.dy - frame.height / 2;
         
-        var duration = ANIMATION_DURATION;
-        if (!animate) {
-            duration = 0;
-        }
         UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseOut, animations: {
             self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
         })
@@ -185,14 +179,9 @@ class QueryNode : Node {
         fatalError("This class does not support NSCoding")
     }
     
-    override func setOffset(vec : CGVector, animate: Bool) {
+    override func setOffset(vec : CGVector, duration: Double) {
         let x = vec.dx - frame.width / 2;
         let y = vec.dy - frame.height / 2;
-        
-        var duration = ANIMATION_DURATION;
-        if (!animate) {
-            duration = 0;
-        }
         
         UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseOut, animations: {
             self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
@@ -362,14 +351,9 @@ class CompoundQueryNode : Node {
         fatalError("This class does not support NSCoding")
     }
     
-    override func setOffset(vec : CGVector, animate: Bool) {
+    override func setOffset(vec : CGVector, duration : Double) {
         let x = vec.dx - frame.width / 2;
         let y = vec.dy - frame.height / 2;
-        
-        var duration = ANIMATION_DURATION;
-        if (!animate) {
-            duration = 0;
-        }
         
         UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseOut, animations: {
             self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)

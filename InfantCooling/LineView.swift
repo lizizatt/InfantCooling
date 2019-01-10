@@ -44,14 +44,9 @@ class LineView : UIView {
         context?.restoreGState();
     }
     
-    func setOffset(vec : CGVector, animate: Bool) {
+    func setOffset(vec : CGVector, duration : Double) {
         let x = vec.dx;
         let y = vec.dy;
-        
-        var duration = DecisionViewController.ANIMATION_DURATION;
-        if (!animate) {
-            duration = 0;
-        }
         
         UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseOut, animations: {
             self.frame.origin = CGPoint(x: x + self.defaultFrame.origin.x, y: y + self.defaultFrame.origin.y)
